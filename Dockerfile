@@ -83,6 +83,6 @@ RUN yes | sdkmanager --licenses && \
 		sdkmanager "platform-tools" "extras;android;m2repository" "platforms;android-23" "build-tools;23.0.1"
 
 #insall git & others
-RUN apk add --no-cache openssl git
+RUN apk add --no-cache openssl git bash
 
 RUN rm -rf /var/cache/apk/*
