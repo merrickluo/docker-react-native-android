@@ -1,25 +1,9 @@
 FROM alpine:3.4
 
-ENV ANDROID_SDK_URL https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
-
 ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 7.8.0
 
-RUN apk update && \
-		apk add openjdk8 && \
-		apk add curl
-
-RUN mkdir -p /opt/android-sdk && \
-		curl $ANDROID_SDK_URL -o sdk.zip && \
-		unzip sdk.zip -d /opt/android-sdk
-
-ENV ANDROID_HOME /opt/android-sdk
-ENV PATH $PATH:$ANDROID_HOME/tools
-ENV PATH $PATH:$ANDROID_HOME/tools/bin
-
-RUN yes | sdkmanager --licenses && \
-		sdkmanager "platform-tools" "extras;android;m2repository" "platforms;android-23" "build-tools;23.0.1"
-
+# install nodejs
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
     && apk add --no-cache \
@@ -63,6 +47,7 @@ RUN addgroup -g 1000 node \
     && rm -Rf "node-v$NODE_VERSION" \
     && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
 
+# install yarn
 ENV YARN_VERSION 0.24.4
 
 RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg \
@@ -80,5 +65,24 @@ RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg \
   && mv yarn.js /usr/local/bin/yarn \
   && chmod +x /usr/local/bin/yarn \
   && apk del .build-deps-yarn
+
+#install android sdk
+ENV ANDROID_SDK_URL https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+
+RUN apk add --no-cache openjdk8 curl
+
+RUN mkdir -p /opt/android-sdk && \
+		curl $ANDROID_SDK_URL -o sdk.zip && \
+		unzip sdk.zip -d /opt/android-sdk
+
+ENV ANDROID_HOME /opt/android-sdk
+ENV PATH $PATH:$ANDROID_HOME/tools
+ENV PATH $PATH:$ANDROID_HOME/tools/bin
+
+RUN yes | sdkmanager --licenses && \
+		sdkmanager "platform-tools" "extras;android;m2repository" "platforms;android-23" "build-tools;23.0.1"
+
+#insall git & others
+RUN apk add --no-cache openssl git
 
 RUN rm -rf /var/cache/apk/*
