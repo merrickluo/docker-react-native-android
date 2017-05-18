@@ -28,4 +28,4 @@ RUN yes | sdkmanager --licenses && \
 		sdkmanager "platform-tools" "extras;android;m2repository" "platforms;android-23" "build-tools;23.0.1"
 
 # android build tool needed
-RUN apt-get update && apt-get install -y lib32stdc++6 lib32z1
+RUN apt-get update && apt-get install -y lib32stdc++6 lib32z1 jq
